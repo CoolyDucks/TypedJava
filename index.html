@@ -2,43 +2,69 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>WikiJava</title>
+<title>WikiJava Example</title>
 <style>
-body { font-family: sans-serif; padding: 20px; background: #f0f0f0; }
-textarea { width: 100%; font-family: monospace; font-size: 14px; margin-bottom: 10px; }
-#output { border:1px solid #ccc; padding:10px; height:200px; overflow:auto; background:#fff; }
-button { margin-right:5px; padding:5px 10px; }
-h2 { margin-bottom: 10px; }
+body { font-family: sans-serif; padding:20px; background:#f9f9f9; }
+pre { background:#eee; padding:10px; border-radius:5px; }
+#output { border:1px solid #ccc; padding:10px; margin-top:10px; background:#fff; }
+button { margin-top:10px; padding:5px 10px; }
 </style>
 </head>
 <body>
 
-<h2>WikiJava Editor</h2>
+<h2>WikiJava Example</h2>
+<p>Simple Java example displayed on WikiJava:</p>
 
-<textarea id="codeArea" rows="12">
-import java.util.*;
-int a = 10;
-double b = 2.5;
-String msg = "Hello WikiJava";
-System.out.println(a);
-System.out.println(b);
-System.out.println(msg);
-</textarea>
+<pre id="codeArea">
+int a = 5;
+int b = 10;
+System.out.println("Sum: " + (a+b));
+</pre>
 
 <div id="output"></div>
-
-<button id="runBtn">Run</button>
-<button id="saveBtn">Save</button>
-<button id="loadBtn">Load</button>
+<button id="runBtn">Run Example</button>
 
 <script type="module">
-import { WikiJava } from './TypedJava.ts';
+class TypedJava {
+    constructor(codeElId, outputElId) {
+        this.codeEl = document.getElementById(codeElId);
+        this.outputEl = document.getElementById(outputElId);
+        this.variables = {};
+    }
 
-const app = new WikiJava('codeArea', 'output');
+    run() {
+        this.outputEl.innerHTML = '';
+        const lines = this.codeEl.textContent.split('\n');
+        for (let line of lines) this.execLine(line.trim());
+    }
 
+    execLine(line) {
+        if (!line) return;
+        if (line.startsWith('System.out.println(') && line.endsWith(');')) {
+            const content = line.slice(19,-2);
+            let result = content;
+            try { 
+                result = eval(content.replace(/\b(\w+)\b/g, v => this.variables[v]!==undefined ? this.variables[v] : v));
+            } catch(e){}
+            this.log(result);
+            return;
+        }
+        let match = line.match(/(int|double|String)\s+(\w+)\s*=\s*(.+);/);
+        if (match) {
+            const [, type, name, value] = match;
+            this.variables[name] = type==="int" ? parseInt(value) : type==="double" ? parseFloat(value) : value.replace(/^"|"$/g,'');
+        }
+    }
+
+    log(msg) {
+        const p = document.createElement('p');
+        p.textContent = msg;
+        this.outputEl.appendChild(p);
+    }
+}
+
+const app = new TypedJava('codeArea','output');
 document.getElementById('runBtn').onclick = () => app.run();
-document.getElementById('saveBtn').onclick = () => app.saveFile('myFile');
-document.getElementById('loadBtn').onclick = () => app.loadFile('myFile');
 </script>
 
 </body>
