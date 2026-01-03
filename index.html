@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>WikiJava</title>
+<style>
+body { font-family: sans-serif; padding: 20px; background: #f0f0f0; }
+textarea { width: 100%; font-family: monospace; font-size: 14px; margin-bottom: 10px; }
+#output { border:1px solid #ccc; padding:10px; height:200px; overflow:auto; background:#fff; }
+button { margin-right:5px; padding:5px 10px; }
+h2 { margin-bottom: 10px; }
+</style>
+</head>
+<body>
+
+<h2>WikiJava Editor</h2>
+
+<textarea id="codeArea" rows="12">
+import java.util.*;
+int a = 10;
+double b = 2.5;
+String msg = "Hello WikiJava";
+System.out.println(a);
+System.out.println(b);
+System.out.println(msg);
+</textarea>
+
+<div id="output"></div>
+
+<button id="runBtn">Run</button>
+<button id="saveBtn">Save</button>
+<button id="loadBtn">Load</button>
+
+<script type="module">
+import { WikiJava } from './TypedJava.ts';
+
+const app = new WikiJava('codeArea', 'output');
+
+document.getElementById('runBtn').onclick = () => app.run();
+document.getElementById('saveBtn').onclick = () => app.saveFile('myFile');
+document.getElementById('loadBtn').onclick = () => app.loadFile('myFile');
+</script>
+
+</body>
+</html>
