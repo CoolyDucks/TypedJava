@@ -13,7 +13,6 @@
 
 ## 💻 Example Usage
 
-```html
 <pre id="codeArea">
 int a = 5;
 int b = 10;
